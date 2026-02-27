@@ -143,14 +143,17 @@ const Loans = () => {
                                             <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">{loan.provider}</span>
                                             <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[10px] font-bold uppercase tracking-tighter">Live Market</span>
                                         </div>
-                                        <h4 className="text-2xl font-display font-bold text-gray-900">
-                                            {loan.title}
-                                            {suggestion?.bestMatchTitle === loan.title && (
-                                                <span className="ml-3 text-[10px] bg-secondary text-white px-2 py-1 rounded-full uppercase tracking-widest">
-                                                    {t('best_match')}
-                                                </span>
-                                            )}
-                                        </h4>
+                                        <div className="flex justify-between items-start gap-3">
+                                            <h4 className="text-2xl font-display font-bold text-gray-900 flex-1">
+                                                {loan.title}
+                                                {suggestion?.bestMatchTitle === loan.title && (
+                                                    <span className="ml-3 text-[10px] bg-secondary text-white px-2 py-1 rounded-full uppercase tracking-widest whitespace-nowrap">
+                                                        {t('best_match')}
+                                                    </span>
+                                                )}
+                                            </h4>
+                                            <AudioButton text={`${loan.provider}. ${loan.title}. ${loan.description || loan.reason}`} />
+                                        </div>
                                         <p className="text-gray-500 font-medium text-sm leading-relaxed">{loan.description || loan.reason}</p>
                                         <div className="flex flex-wrap gap-2">
                                             {loan.benefits?.map((b, i) => (
@@ -269,8 +272,11 @@ const Loans = () => {
                                             <div className="shrink-0 h-10 w-10 bg-primary text-white rounded-2xl flex items-center justify-center font-black shadow-lg shadow-primary/20 z-10">
                                                 {i + 1}
                                             </div>
-                                            <div className="space-y-1 pb-6">
-                                                <h4 className="text-lg font-bold text-gray-900 uppercase tracking-tight">{step.step}</h4>
+                                            <div className="space-y-1 pb-6 flex-grow">
+                                                <div className="flex justify-between items-start">
+                                                    <h4 className="text-lg font-bold text-gray-900 uppercase tracking-tight">{step.step}</h4>
+                                                    <AudioButton text={`${step.step}. ${step.action}`} />
+                                                </div>
                                                 <p className="text-gray-500 font-medium leading-relaxed">{step.action}</p>
                                             </div>
                                         </div>

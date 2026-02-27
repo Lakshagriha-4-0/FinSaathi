@@ -12,7 +12,7 @@ const generateToken = (id) => {
 // @access  Public
 export const registerUser = async (req, res, next) => {
     try {
-        const { name, email, password, language, familyCondition } = req.body;
+        const { name, email, password, language, familyCondition, bio } = req.body;
         console.log(`Registration attempt for: ${email}`);
 
         const userExists = await User.findOne({ email });
@@ -28,6 +28,7 @@ export const registerUser = async (req, res, next) => {
             email,
             password,
             language,
+            bio: bio || '',
             familyCondition: {
                 incomeBracket: familyCondition?.incomeBracket || '< 2L',
                 dependents: Number(familyCondition?.dependents) || 0,
@@ -42,6 +43,8 @@ export const registerUser = async (req, res, next) => {
                 name: user.name,
                 email: user.email,
                 language: user.language,
+                bio: user.bio,
+                familyCondition: user.familyCondition,
                 token: generateToken(user._id),
             });
         } else {
@@ -72,6 +75,8 @@ export const loginUser = async (req, res, next) => {
                 name: user.name,
                 email: user.email,
                 language: user.language,
+                bio: user.bio,
+                familyCondition: user.familyCondition,
                 token: generateToken(user._id),
             });
         } else {
@@ -95,11 +100,14 @@ export const updateProfile = async (req, res, next) => {
         if (user) {
             user.name = req.body.name || user.name;
             user.language = req.body.language || user.language;
+            if (req.body.bio !== undefined) {
+                user.bio = req.body.bio;
+            }
             if (req.body.familyCondition) {
-                user.familyCondition = {
-                    ...user.familyCondition,
-                    ...req.body.familyCondition
-                };
+                if (!user.familyCondition) user.familyCondition = {};
+                user.familyCondition.incomeBracket = req.body.familyCondition.incomeBracket !== undefined ? req.body.familyCondition.incomeBracket : user.familyCondition.incomeBracket;
+                user.familyCondition.dependents = req.body.familyCondition.dependents !== undefined ? req.body.familyCondition.dependents : user.familyCondition.dependents;
+                user.familyCondition.isRulerArea = req.body.familyCondition.isRulerArea !== undefined ? req.body.familyCondition.isRulerArea : user.familyCondition.isRulerArea;
             }
 
             const updatedUser = await user.save();
@@ -109,6 +117,7 @@ export const updateProfile = async (req, res, next) => {
                 name: updatedUser.name,
                 email: updatedUser.email,
                 language: updatedUser.language,
+                bio: updatedUser.bio,
                 familyCondition: updatedUser.familyCondition,
                 token: generateToken(updatedUser._id),
             });

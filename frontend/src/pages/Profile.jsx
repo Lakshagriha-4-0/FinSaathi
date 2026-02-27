@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { User, Globe, MapPin, TrendingUp, Users, Save } from 'lucide-react';
+import { User, Globe, MapPin, TrendingUp, Users, Save, FileText } from 'lucide-react';
 import api from '../services/api';
 import { useTranslation } from 'react-i18next';
 import AudioButton from '../components/AudioButton';
@@ -10,6 +10,7 @@ const Profile = () => {
     const { t, i18n } = useTranslation();
     const [formData, setFormData] = useState({
         name: user?.name || '',
+        bio: user?.bio || '',
         language: user?.language || 'en',
         incomeBracket: user?.familyCondition?.incomeBracket || '< 2L',
         dependents: user?.familyCondition?.dependents || 0,
@@ -22,6 +23,7 @@ const Profile = () => {
         if (user) {
             setFormData({
                 name: user.name || '',
+                bio: user.bio || '',
                 language: user.language || 'en',
                 incomeBracket: user.familyCondition?.incomeBracket || '< 2L',
                 dependents: user.familyCondition?.dependents || 0,
@@ -40,10 +42,11 @@ const Profile = () => {
         setLoading(true);
         setMessage('');
         try {
-            const { name, language, incomeBracket, dependents, isRulerArea } = formData;
+            const { name, language, bio, incomeBracket, dependents, isRulerArea } = formData;
             const res = await api.put('/auth/profile', {
                 name,
                 language,
+                bio,
                 familyCondition: {
                     incomeBracket,
                     dependents: Number(dependents),
@@ -69,10 +72,10 @@ const Profile = () => {
                     </div>
                     <div>
                         <h1 className="text-3xl font-display font-black text-gray-900 flex items-center gap-3">
-                            {t('profile_title')}
-                            <AudioButton text={`${t('profile_title')}. ${t('profile_desc')}`} />
+                            {user?.name || t('profile_title')}
+                            <AudioButton text={`${user?.name || t('profile_title')}. ${user?.bio || t('profile_desc')}`} />
                         </h1>
-                        <p className="text-gray-500 font-medium">{t('profile_desc')}</p>
+                        <p className="text-gray-500 font-medium">{user?.bio || t('profile_desc')}</p>
                     </div>
                 </div>
 
@@ -144,6 +147,20 @@ const Profile = () => {
                                 />
                             </div>
                         </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-widest px-2 font-display">
+                            <FileText size={14} /> Profile Bio / Description
+                        </label>
+                        <textarea
+                            name="bio"
+                            rows="3"
+                            className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-primary focus:bg-white transition-all text-sm font-medium resize-none"
+                            placeholder="Tell us a little bit about yourself or your business goals..."
+                            value={formData.bio}
+                            onChange={handleChange}
+                        />
                     </div>
 
                     <div className="flex items-center gap-3 p-5 bg-primary/5 rounded-2xl border border-primary/10">

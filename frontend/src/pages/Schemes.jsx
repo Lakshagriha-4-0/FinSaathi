@@ -214,8 +214,11 @@ const Schemes = () => {
                                             <div className="shrink-0 h-10 w-10 bg-secondary text-white rounded-2xl flex items-center justify-center font-black shadow-lg shadow-secondary/20 z-10">
                                                 {i + 1}
                                             </div>
-                                            <div className="space-y-1 pb-6">
-                                                <h4 className="text-lg font-bold text-gray-900 uppercase tracking-tight">{step.step}</h4>
+                                            <div className="space-y-1 pb-6 flex-grow">
+                                                <div className="flex justify-between items-start">
+                                                    <h4 className="text-lg font-bold text-gray-900 uppercase tracking-tight">{step.step}</h4>
+                                                    <AudioButton text={`${step.step}. ${step.action}`} />
+                                                </div>
                                                 <p className="text-gray-500 font-medium leading-relaxed">{step.action}</p>
                                             </div>
                                         </div>

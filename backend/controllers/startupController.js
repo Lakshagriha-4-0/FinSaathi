@@ -1,4 +1,5 @@
 import Startup from '../models/Startup.js';
+import Expense from '../models/Expense.js';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
 
@@ -9,13 +10,29 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 // @desc    Get dynamic startup ideas
 // @route   GET /api/startups
-// @access  Public
+// @access  Public (Personalized if user logged in)
 export const getStartups = async (req, res, next) => {
     try {
         const lang = req.query.lang || 'en';
+        let contextText = "for a rural/village context in India.";
 
-        const prompt = `Task: Generate 4 high-potential small business ideas for a rural/village context in India.
-        Include details: title, description (1 sentence), investmentRequired (range in ₹), profitMargin (%), difficulty (Easy/Medium/Hard), and category.
+        if (req.user) {
+            const expenses = await Expense.find({ user: req.user._id });
+            const income = expenses.filter(e => e.type === 'income').reduce((acc, curr) => acc + curr.amount, 0);
+            const expenseTotal = expenses.filter(e => e.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
+            const savings = income - expenseTotal;
+
+            const incomeBracket = req.user.familyCondition?.incomeBracket || 'unspecified';
+            const area = req.user.familyCondition?.isRulerArea ? 'rural/village' : 'semi-urban';
+
+            contextText = `for a real user living in a ${area} area. 
+            User's family income bracket: ${incomeBracket}.
+            User's estimated current savings/working capital: ₹${savings >= 0 ? savings : 0}.
+            Suggest business ideas that are REALISTIC within this budget and highly profitable.`;
+        }
+
+        const prompt = `Task: Generate 4 high-potential small business ideas ${contextText}
+        Include details: title, description (1 sentence), investmentRequired (realistic range in ₹ based on their capital), profitMargin (%), difficulty (Easy/Medium/Hard), and category.
         
         Focus on categories like: Agriculture, Dairy, Eco-friendly, Handicrafts, or Local Services.
         
@@ -26,17 +43,23 @@ export const getStartups = async (req, res, next) => {
         Translate all text values into ${lang}.
         Return ONLY raw JSON.`;
 
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text().replace(/```json|```/g, '').trim();
+        let text = "";
+        try {
+            const result = await model.generateContent(prompt);
+            const response = await result.response;
+            text = response.text();
 
-        const jsonMatch = text.match(/\[[\s\S]*\]/);
-        if (jsonMatch) {
-            const startups = JSON.parse(jsonMatch[0]);
-            return res.json(startups);
+            const cleanText = text.replace(/```json|```/g, '').trim();
+            const jsonMatch = cleanText.match(/\[[\s\S]*\]/);
+            if (jsonMatch) {
+                const startups = JSON.parse(jsonMatch[0]);
+                return res.json(startups);
+            }
+        } catch (aiError) {
+            console.error("AI Generation missing or failed:", aiError.message);
         }
 
-        // Fallback to DB if AI fails
+        // Fallback to DB if AI fails or formatting is wrong
         const dbStartups = await Startup.find();
         res.json(dbStartups);
     } catch (error) {
@@ -46,25 +69,51 @@ export const getStartups = async (req, res, next) => {
 
 // @desc    Generate a business blueprint using AI
 // @route   POST /api/startups/blueprint
-// @access  Private
+// @access  Public (Personalized if user logged in)
 export const generateBlueprint = async (req, res, next) => {
     try {
         const { title, lang = 'en' } = req.body;
+        let contextText = "for a rural startup";
 
-        const prompt = `Generate a 5-step detailed business blueprint for a rural startup called "${title}".
-        For each step, provide a short title and a 2-sentence actionable advice.
-        Return ONLY a JSON array: [{"step": "...", "advice": "..."}].
-        Translate into ${lang}.`;
+        if (req.user) {
+            const expenses = await Expense.find({ user: req.user._id });
+            const income = expenses.filter(e => e.type === 'income').reduce((acc, curr) => acc + curr.amount, 0);
+            const expenseTotal = expenses.filter(e => e.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
+            const savings = income - expenseTotal;
 
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text().replace(/```json|```/g, '').trim();
+            const area = req.user.familyCondition?.isRulerArea ? 'rural/village' : 'semi-urban';
 
-        const jsonMatch = text.match(/\[[\s\S]*\]/);
-        if (jsonMatch) {
-            return res.json(JSON.parse(jsonMatch[0]));
+            contextText = `for a ${area} startup, tailored for a user with approximately ₹${savings >= 0 ? savings : 0} in available capital`;
         }
-        res.status(500).json({ message: 'Failed to generate blueprint' });
+
+        const prompt = `Generate a 5-step detailed business blueprint ${contextText} called "${title}".
+        For each step, provide a short title and a 2-sentence actionable advice on how they can practically start it in their local context.
+        Return ONLY a JSON array: [{"step": "...", "advice": "..."}].
+        Translate all content into ${lang}.`;
+
+        let text = "";
+        try {
+            const result = await model.generateContent(prompt);
+            const response = await result.response;
+            text = response.text();
+
+            const cleanText = text.replace(/```json|```/g, '').trim();
+            const jsonMatch = cleanText.match(/\[[\s\S]*\]/);
+            if (jsonMatch) {
+                return res.json(JSON.parse(jsonMatch[0]));
+            }
+        } catch (aiError) {
+            console.error("Blueprint AI failed:", aiError.message);
+        }
+
+        // Fallback Blueprint
+        return res.json([
+            { step: "Research & Planning", advice: "Understand local market gaps and determine your exact target audience in the village/town." },
+            { step: "Secure Funding", advice: "Gather necessary capital from savings or apply for local government micro-finance schemes." },
+            { step: "Procure Resources", advice: "Source raw materials and necessary equipment from reliable, cost-effective vendors." },
+            { step: "Launch Operations", advice: "Set up your workspace and start offering your product or service to close contacts." },
+            { step: "Marketing & Scaling", advice: "Use word-of-mouth and local promotion to get more customers and slowly expand." }
+        ]);
     } catch (error) {
         next(error);
     }

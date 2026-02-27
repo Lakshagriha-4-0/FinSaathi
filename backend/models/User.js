@@ -7,6 +7,10 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: [true, 'Please add a name'],
         },
+        bio: {
+            type: String,
+            default: '',
+        },
         email: {
             type: String,
             required: [true, 'Please add an email'],
@@ -54,9 +58,9 @@ const userSchema = new mongoose.Schema(
 );
 
 // Encrypt password using bcrypt
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function () {
     if (!this.isModified('password')) {
-        next();
+        return;
     }
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);

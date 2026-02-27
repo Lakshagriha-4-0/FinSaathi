@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import api from '../services/api';
 import AudioButton from '../components/AudioButton';
+import MentorChat from '../components/MentorChat';
 
 const Dashboard = () => {
     const { t, i18n } = useTranslation();
@@ -89,14 +90,15 @@ const Dashboard = () => {
             </div>
 
             {/* AI Insights Bar */}
-            <div className="bg-gradient-to-r from-primary to-primary-dark rounded-[32px] p-1 shadow-lg">
-                <div className="bg-white rounded-[31px] p-6 lg:p-8 flex flex-col lg:flex-row items-center gap-6">
-                    <div className="shrink-0 h-16 w-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group">
+            <div className="bg-gradient-to-r from-primary via-primary-light to-primary-dark rounded-[32px] p-1 shadow-2xl shadow-primary/20 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+                <div className="bg-white/95 backdrop-blur-md rounded-[31px] p-6 lg:p-8 flex flex-col lg:flex-row items-center gap-6 relative z-10 transition-colors duration-500 group-hover:bg-white">
+                    <div className="shrink-0 h-16 w-16 bg-gradient-to-tr from-primary to-accent rounded-2xl flex items-center justify-center text-white shadow-lg shadow-primary/30">
                         <Sparkles size={32} className="animate-pulse" />
                     </div>
                     <div className="flex-1 space-y-2">
                         <div className="flex items-center gap-3">
-                            <h3 className="text-lg font-bold text-gray-900 uppercase tracking-tight">{t('ai_insight')}</h3>
+                            <h3 className="text-lg font-black text-gray-900 uppercase tracking-tight font-display">{t('ai_insight')}</h3>
                             {insights && <AudioButton text={`${t('ai_insight')}. ${insights.summary}. ${t('saving_tips')}: ${insights.tips?.join('. ')}`} />}
                         </div>
                         {loadingInsights ? (
@@ -106,12 +108,12 @@ const Dashboard = () => {
                             </div>
                         ) : insights?.tips?.length > 0 ? (
                             <div className="space-y-4">
-                                <p className="text-gray-600 font-medium border-l-4 border-primary/20 pl-4">{insights.summary}</p>
+                                <p className="text-gray-700 font-medium border-l-[4px] border-accent pl-4 text-base leading-relaxed bg-accent/5 py-1 pr-3 rounded-r-lg">{insights.summary}</p>
                                 <div className="grid md:grid-cols-3 gap-4">
                                     {insights.tips.map((tip, i) => (
-                                        <div key={i} className="bg-gray-50 p-3 rounded-xl border border-gray-100 text-xs font-bold text-primary flex gap-2 items-start">
-                                            <div className="h-4 w-4 rounded bg-primary text-white flex items-center justify-center shrink-0 mt-0.5">{i + 1}</div>
-                                            {tip}
+                                        <div key={i} className="bg-gradient-to-b from-gray-50 to-white p-4 rounded-2xl border border-gray-100 text-[13px] font-bold text-gray-700 flex gap-3 items-start shadow-sm hover:shadow-md transition-shadow">
+                                            <div className="h-6 w-6 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">{i + 1}</div>
+                                            <span className="leading-snug pt-0.5">{tip}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -125,35 +127,39 @@ const Dashboard = () => {
 
             {/* Stats Grid */}
             <div className="grid md:grid-cols-3 gap-6">
-                <div className="p-8 bg-white rounded-[32px] border border-gray-100 shadow-sm relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform">
-                        <TrendingUp size={80} className="text-primary" />
+                <div className="p-8 bg-gradient-to-br from-white to-gray-50 rounded-[32px] border border-gray-200 shadow-xl shadow-gray-200/50 relative overflow-hidden group hover:-translate-y-1 transition-all duration-300">
+                    <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:scale-110 group-hover:-rotate-12 transition-transform duration-500">
+                        <TrendingUp size={100} className="text-primary" />
                     </div>
-                    <div className="flex items-center gap-2 mb-1">
-                        <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">{t('balance')}</p>
+                    <div className="flex items-center gap-2 mb-1 relative z-10">
+                        <p className="text-sm font-black text-gray-500 uppercase tracking-widest font-display">{t('balance')}</p>
                         <AudioButton text={t('balance')} />
                     </div>
-                    <p className={`text-4xl font-extrabold mt-2 ${balance >= 0 ? 'text-primary' : 'text-red-500'}`}>
+                    <p className={`text-4xl font-black mt-2 font-display relative z-10 ${balance >= 0 ? 'text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-light' : 'text-red-500'}`}>
                         ₹ {balance.toLocaleString()}
                     </p>
                 </div>
 
-                <div className="p-8 bg-white rounded-[32px] border border-gray-100 shadow-sm">
+                <div className="p-8 bg-white rounded-[32px] border border-gray-100 shadow-lg shadow-gray-200/30 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300">
                     <div className="flex items-center gap-3 text-primary mb-2">
-                        <ArrowUpCircle size={20} />
-                        <span className="text-sm font-bold uppercase tracking-widest">{t('total_income')}</span>
+                        <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                            <ArrowUpCircle size={20} className="text-primary" />
+                        </div>
+                        <span className="text-sm font-black uppercase tracking-widest font-display text-gray-500">{t('total_income')}</span>
                         <AudioButton text={t('total_income')} />
                     </div>
-                    <p className="text-3xl font-extrabold text-gray-900">₹ {totalIncome.toLocaleString()}</p>
+                    <p className="text-3xl font-display font-black text-gray-900 mt-2">₹ {totalIncome.toLocaleString()}</p>
                 </div>
 
-                <div className="p-8 bg-white rounded-[32px] border border-gray-100 shadow-sm">
+                <div className="p-8 bg-white rounded-[32px] border border-gray-100 shadow-lg shadow-gray-200/30 hover:-translate-y-1 hover:shadow-xl hover:shadow-red-500/10 transition-all duration-300">
                     <div className="flex items-center gap-3 text-red-500 mb-2">
-                        <ArrowDownCircle size={20} />
-                        <span className="text-sm font-bold uppercase tracking-widest">{t('total_expense')}</span>
+                        <div className="h-8 w-8 rounded-full bg-red-50 flex items-center justify-center">
+                            <ArrowDownCircle size={20} className="text-red-500" />
+                        </div>
+                        <span className="text-sm font-black uppercase tracking-widest font-display text-gray-500">{t('total_expense')}</span>
                         <AudioButton text={t('total_expense')} />
                     </div>
-                    <p className="text-3xl font-extrabold text-gray-900">₹ {totalExpense.toLocaleString()}</p>
+                    <p className="text-3xl font-display font-black text-gray-900 mt-2">₹ {totalExpense.toLocaleString()}</p>
                 </div>
             </div>
 
@@ -260,14 +266,15 @@ const Dashboard = () => {
                                     {t('expense')}
                                 </button>
                             </div>
-                            <button className="w-full py-4 bg-gray-900 text-white font-extrabold rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
-                                <Plus size={18} />
+                            <button className="w-full py-4 bg-gradient-to-r from-gray-900 to-gray-800 text-white font-extrabold rounded-2xl shadow-xl shadow-gray-900/20 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 group/btn">
+                                <Plus size={18} className="group-hover/btn:rotate-90 transition-transform duration-300" />
                                 {t('save_entry')}
                             </button>
                         </form>
                     </div>
                 </div>
             </div>
+            <MentorChat />
         </div>
     );
 };

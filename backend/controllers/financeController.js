@@ -86,15 +86,30 @@ export const getSpendingInsights = async (req, res, next) => {
         Return ONLY a JSON object: {"summary": "...", "tips": ["Tip 1", "Tip 2", "Tip 3"]}.
         Translate into ${lang}.`;
 
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text().replace(/```json|```/g, '').trim();
+        let text = "";
+        try {
+            const result = await model.generateContent(prompt);
+            const response = await result.response;
+            text = response.text();
 
-        const jsonMatch = text.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-            return res.json(JSON.parse(jsonMatch[0]));
+            const cleanText = text.replace(/```json|```/g, '').trim();
+            const jsonMatch = cleanText.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                return res.json(JSON.parse(jsonMatch[0]));
+            }
+        } catch (aiError) {
+            console.error("AI Insights Failed:", aiError.message);
         }
-        res.status(500).json({ message: 'Failed to generate insights' });
+
+        // Fallback Insights
+        return res.json({
+            summary: "Keep a close eye on your daily and weekly expenses to grow your savings.",
+            tips: [
+                "Track small cash expenses daily; they add up quickly.",
+                "Create a separate savings fund for emergencies.",
+                "Review your spending every month to find areas to cut back."
+            ]
+        });
     } catch (error) {
         next(error);
     }

@@ -32,6 +32,7 @@ import infoRoutes from './routes/infoRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 import startupRoutes from './routes/startupRoutes.js';
 import loanRoutes from './routes/loanRoutes.js';
+import mentorshipRoutes from './routes/mentorshipRoutes.js';
 
 app.use('/api/auth', authRoutes);
 app.use('/api/finance', financeRoutes);
@@ -39,6 +40,7 @@ app.use('/api/info', infoRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/startups', startupRoutes);
 app.use('/api/loans', loanRoutes);
+app.use('/api/mentorship', mentorshipRoutes);
 
 // Test route
 app.get('/', (req, res) => {

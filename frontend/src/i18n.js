@@ -93,7 +93,9 @@ i18n
                     explanation_title: 'How this scam works',
                     video_lessons: 'Watch and Learn',
                     close: 'Close',
-                    contact_cyber_cell: 'Contact Cyber Cell'
+                    contact_cyber_cell: 'Contact Cyber Cell',
+                    mentor_chat_title: 'Saathi Mentor',
+                    ask_mentor: 'Ask me anything...'
                 }
             },
             hi: {
@@ -183,7 +185,9 @@ i18n
                     explanation_title: 'यह घोटाला कैसे काम करता है',
                     video_lessons: 'देखें और सीखें',
                     close: 'बंद करें',
-                    contact_cyber_cell: 'साइबर सेल से संपर्क करें'
+                    contact_cyber_cell: 'साइबर सेल से संपर्क करें',
+                    mentor_chat_title: 'सार्थी मेंटर',
+                    ask_mentor: 'मुझसे कुछ भी पूछें...'
                 }
             },
             mr: {
@@ -291,7 +295,9 @@ i18n
                     explanation_title: 'हा घोटाळा कसा काम करतो',
                     video_lessons: 'पहा आणि शिका',
                     close: 'बंद करा',
-                    contact_cyber_cell: 'सायबर सेलशी संपर्क साधा'
+                    contact_cyber_cell: 'सायबर सेलशी संपर्क साधा',
+                    mentor_chat_title: 'सार्थी मार्गदर्शक',
+                    ask_mentor: 'काहीही विचारा...'
                 }
             },
             ta: {
@@ -399,7 +405,9 @@ i18n
                     explanation_title: 'இந்த மோசடி எப்படி நடக்கிறது',
                     video_lessons: 'பார்த்து கற்றுக்கொள்ளுங்கள்',
                     close: 'மூடு',
-                    contact_cyber_cell: 'சைபர் செல்லைத் தொடர்பு கொள்ளவும்'
+                    contact_cyber_cell: 'சைபர் செல்லைத் தொடர்பு கொள்ளவும்',
+                    mentor_chat_title: 'சாதி ஆலோசகர்',
+                    ask_mentor: 'என்னிடம் எதையும் கேளுங்கள்...'
                 }
             }
         },
