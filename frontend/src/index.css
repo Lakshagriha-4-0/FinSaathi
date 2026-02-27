@@ -1,42 +1,33 @@
 @import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap");
 
-:root {
-  font-family: "Space Grotesk", "DM Sans", system-ui, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@theme {
+  --color-primary: #1B5E20;
+  --color-primary-light: #4C8C4A;
+  --color-primary-dark: #003300;
+  
+  --color-secondary: #0D47A1;
+  --color-secondary-light: #5472D3;
+  --color-secondary-dark: #002171;
+  
+  --color-accent: #FF8F00;
+  --color-accent-light: #FFC046;
+  --color-accent-dark: #C56000;
 
-  --paper: #f7f2e9;
-  --ink: #1f1b16;
-  --ink-strong: #14110e;
-  --ink-muted: #6b6157;
-  --sun: #f6c453;
-  --mint: #8fd1c6;
-  --border: #e4d8c8;
+  --color-background: #F5F5F7;
+  --color-surface: #FFFFFF;
+
+  --font-sans: "Inter", "system-ui", sans-serif;
+  --font-display: "Outfit", sans-serif;
 }
 
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  min-height: 100vh;
-  background: var(--paper);
-  color: var(--ink);
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-#root {
-  min-height: 100vh;
+@layer base {
+  body {
+    @apply bg-background text-gray-900 font-sans;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-bold;
+  }
 }
 
 @layer utilities {
